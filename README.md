@@ -1,5 +1,6 @@
 # React Native Share File
 
+Share with a file for React Native
 This package calls UIDocumentInteractionController for IOS to share the file.
 
 ```js
