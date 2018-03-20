@@ -31,11 +31,11 @@ RCT_EXPORT_MODULE();
 }
 
 
-
 RCT_EXPORT_METHOD(share:(NSDictionary *)options
 	resolver:(RCTPromiseResolveBlock)resolve
 	rejecter:(RCTPromiseRejectBlock)reject)
 {
+
 	NSString *fileURL = [RCTConvert NSString:options[@"url"]];
 	NSURL *url = [NSURL fileURLWithPath:fileURL];
 
@@ -46,12 +46,19 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
 
 	UIViewController *ctrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
 
-	dispatch_async(dispatch_get_main_queue(), ^{
-		if(![self.documentInteractionController presentOpenInMenuFromRect:ctrl.view.bounds inView:ctrl.view animated:YES]){
-			UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:@"There are no installed apps that can open this file." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-			[alertView show];
-		}       
-	});    
+	NSString *deviceModel = (NSString*)[UIDevice currentDevice].model;
+	if ([[deviceModel substringWithRange:NSMakeRange(0, 4)] isEqualToString:@"iPad"]) {
+		//printf("iPad");
+		CGRect rect = CGRectMake (0.0, 0.0, 0.0, 0.0);
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self.documentInteractionController presentOpenInMenuFromRect:rect inView:ctrl.view animated:YES];
+		});    
+	} else {
+		//printf("iPhone or iPod Touch");
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self.documentInteractionController presentOpenInMenuFromRect:ctrl.view.bounds inView:ctrl.view animated:YES];       
+		});    
+	}
 }
 
 @end
